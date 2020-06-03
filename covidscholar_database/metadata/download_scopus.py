@@ -1,3 +1,17 @@
+import os
+import sys
+
+parent_folder = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        '../..'
+    )
+)
+print('parent_folder', parent_folder)
+if parent_folder not in sys.path:
+    sys.path.append(parent_folder)
+
+
 import json
 from pprint import pprint
 from datetime import datetime
@@ -91,6 +105,25 @@ def collect_scopus_data(mongo_db):
 
 
 if __name__ == '__main__':
+
+    """
+    Readme to download data from scopus
+
+    1. Apply a scopus API key 
+        (a) https://dev.elsevier.com/api_key_settings.html
+        (b) Click "My API key" to register an account and get the key 
+
+    2. Add following environment variables
+        SCOPUS_API: xx-your-scopus-api-key-xx
+        COVID_HOST: mongodb05.nersc.gov
+        COVID_USER: xx-your-username-xx
+        COVID_PASS: xx-your-password-xx
+        COVID_DB: COVID-19-text-mining
+    
+    3. Run this script once a week. It will try to download data from scopus for 50 blocks * 100 doi/block.
+    
+    """
+
     db = get_mongo_db(mongo_config={
         'host': os.getenv("COVID_HOST"),
         'username': os.getenv("COVID_USER"),
