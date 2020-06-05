@@ -6,6 +6,7 @@ import requests
 from utils import clean_title, clean_abstract, find_cited_by, find_references
 from mongoengine import DynamicDocument, ReferenceField, DateTimeField, GenericReferenceField
 from collections import defaultdict
+from crossref.restful import Works
 
 latest_version = 2
 
@@ -347,8 +348,17 @@ class CORD19Parser(Parser):
 
     def _parse_document_type(self, doc):
         """ Returns the document type of a document as a <class 'str'>.
-        e.g. 'paper', 'clinical_trial', 'patent', 'news'. """
-        return 'paper'
+        e.g. 'paper', 'clinical_trial', 'patent', 'news', 'chapter'. """
+        doi = self._parse_doi(self, doc)
+        
+        works = Works()
+        doc_type = works.doi(doi)
+        
+        if doc_type == 'book-chapter':
+            return 'chapter'
+        else:
+            return 'paper'
+        
 
     def _parse_copyright(self, doc):
         """ Returns the copyright notice of a document as a <class 'str'>."""
