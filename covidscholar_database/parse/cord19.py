@@ -349,7 +349,7 @@ class CORD19Parser(Parser):
     def _parse_document_type(self, doc):
         """ Returns the document type of a document as a <class 'str'>.
         e.g. 'paper', 'clinical_trial', 'patent', 'news', 'chapter'. """
-        doi = self._parse_doi(self, doc)
+        doi = self._parse_doi(doc)
         
         works = Works()
         doc_type = works.doi(doi)
