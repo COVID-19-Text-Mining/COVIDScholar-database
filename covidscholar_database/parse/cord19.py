@@ -346,20 +346,45 @@ class CORD19Parser(Parser):
         """ Returns the version of a document as a <class 'int'>."""
         return latest_version
 
+    def _parse_is_index(self, doc):
+        """ Returns a <class 'bool'> specifying whether the document is an index."""
+        title = self._parse_title(doc)
+        is_index = False
+        search_index = re.search("([kK]eyword|[sS]ubject)[.\s]*[iI]ndex", title)
+        if search_index != None:
+            is_index = True
+        return is_index
+    
+    def _parse_is_table_of_contents(self, doc):
+        """ Returns a <class 'bool'> specifying whether the document is a table of contents."""
+        title = self._parse_title(doc)
+        is_toc = False
+        search_toc = re.search("([tT]able)[.\s]*([oO]f)[.\s]*([cC]ontents)", title)
+        if search_toc != None:
+            is_toc = True
+        return is_toc
+
     def _parse_document_type(self, doc):
         """ Returns the document type of a document as a <class 'str'>.
-        e.g. 'paper', 'clinical_trial', 'patent', 'news', 'chapter'. """
-        
+        e.g. 'paper', 'clinical_trial', 'patent', 'news', 'chapter', 'index', 'table_of_contents'"""
         doi = self._parse_doi(doc)
         if doi is None:
             return 'paper'
+
+        is_toc = self._parse_is_table_of_contents(doc)
+        if is_toc:
+            return 'table_of_contents'
+
+        is_index = self._parse_is_index(doc)
+        if is_index:
+            return 'index'
         
         works = Works()
         doc_info = works.doi(doi)
         
         if doc_info['type'] == 'book-chapter':
             return 'chapter'
-        else:
+        else
             return 'paper'
         
 
