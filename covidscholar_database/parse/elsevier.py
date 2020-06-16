@@ -167,7 +167,7 @@ class ElsevierParser(Parser):
         but have not been officially published."""
         title = self._parse_title(doc)
         abstract = self._parse_abstract(doc)
-        is_preprint = False
+        is_pre_proof = False
     
         re_string = "[jJ][\s]*o[\s]*u[\s]*r[\s]*n[\s]*a[\s]*l[\s]*[pP][\s]*r[\s]*e[\s]*-[\s]*p[\s]*r[\s]*o[\s]*o[\s]*f"
         if abstract != None:
@@ -177,8 +177,8 @@ class ElsevierParser(Parser):
     
     
         if search_abstract or search_title != None:
-            is_preprint = True
-        return is_preprint
+            is_pre_proof = True
+        return is_pre_proof
 
     def _parse_is_covid19(self, doc):
         """ Returns a <class 'bool'> if we know for sure a document is specifically about COVID-19.
