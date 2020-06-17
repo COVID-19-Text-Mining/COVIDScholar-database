@@ -161,6 +161,42 @@ class ElsevierParser(Parser):
         If it's not immediately clear from the source it's coming from, return None."""
         return False
 
+    def _parse_is_journal_pre_proof(self, doc):
+        """Returns a <class 'bool'> specifying whether the document is
+        a journal pre-proof. These entries are still peer-reviewed,
+        but have not been officially published."""
+        title = self._parse_title(doc)
+        abstract = self._parse_abstract(doc)
+        is_pre_proof = False
+    
+        re_string = "[jJ][\s]*o[\s]*u[\s]*r[\s]*n[\s]*a[\s]*l[\s]*[pP][\s]*r[\s]*e[\s]*-[\s]*p[\s]*r[\s]*o[\s]*o[\s]*f"
+        if abstract != None:
+            search_abstract = re.search(re_string, abstract)
+        if title != None:
+            search_title = re.search(re_string, title)
+    
+    
+        if search_abstract or search_title != None:
+            is_pre_proof = True
+        return is_pre_proof
+
+    def _clean_preproof_abstract(self, doc):
+        """ Returns a <class 'string'> of the cleaned version of the abstract,
+        i.e. without any instances of 'journal pre-proof' present. If abstract
+        does not need to be cleaned, returns original abstract. If abstract
+        does not exist, returns None. """
+        abstract = self._parse_abstract(doc)
+        if self._parse_is_journal_pre_proof(doc) and abstract != None:
+            cleaned = re.sub("[jJ][\s]*o[\s]*u[\s]*r[\s]*n[\s]*a[\s]*l[\s]*[pP][\s]*r[\s]*e[\s]*-[\s]*p[\s]*r[\s]*o[\s]*o[\s]*f", "", abstract)
+            cleaned = re.sub("\s\s", "", cleaned)
+        
+            if re.search("^\s", cleaned):
+                cleaned = re.sub("^\s", "", cleaned)
+            if re.search("\s$", cleaned):
+                cleaned = re.sub("\s$", "", cleaned)
+            return cleaned
+        return abstract
+
     def _parse_is_covid19(self, doc):
         """ Returns a <class 'bool'> if we know for sure a document is specifically about COVID-19.
         If it's not immediately clear from the source it's coming from, return None."""
