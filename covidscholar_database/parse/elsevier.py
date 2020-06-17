@@ -180,6 +180,23 @@ class ElsevierParser(Parser):
             is_pre_proof = True
         return is_pre_proof
 
+    def _clean_preproof_abstract(self, doc):
+        """ Returns a <class 'string'> of the cleaned version of the abstract,
+        i.e. without any instances of 'journal pre-proof' present. If abstract
+        does not need to be cleaned, returns original abstract. If abstract
+        does not exist, returns None. """
+        abstract = self._parse_abstract(doc)
+        if self._parse_is_journal_pre_proof(doc) and abstract != None:
+            cleaned = re.sub("[jJ][\s]*o[\s]*u[\s]*r[\s]*n[\s]*a[\s]*l[\s]*[pP][\s]*r[\s]*e[\s]*-[\s]*p[\s]*r[\s]*o[\s]*o[\s]*f", "", abstract)
+            cleaned = re.sub("\s\s", "", cleaned)
+        
+            if re.search("^\s", cleaned):
+                cleaned = re.sub("^\s", "", cleaned)
+            if re.search("\s$", cleaned):
+                cleaned = re.sub("\s$", "", cleaned)
+            return cleaned
+        return abstract
+
     def _parse_is_covid19(self, doc):
         """ Returns a <class 'bool'> if we know for sure a document is specifically about COVID-19.
         If it's not immediately clear from the source it's coming from, return None."""
